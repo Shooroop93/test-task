@@ -16,15 +16,13 @@ public class UsersPhotoListener {
         LocalDateTime now = LocalDateTime.now();
         photo.setCreatedAt(now);
         photo.setUpdatedAt(now);
-        log.info("User '{}',added photo: '{}'", photo.getOwner() != null ? photo.getOwner().getId() : "unknown", photo.getUrlPhoto());
+        log.info("User '{}', added photo: '{}'", photo.getOwner() != null ? photo.getOwner().getId() : "unknown", photo.getUrlPhoto());
     }
 
     @PreUpdate
     public void beforeUpdate(UsersPhoto photo) {
         photo.setUpdatedAt(LocalDateTime.now());
-        log.info("User '{}',update photo: '{}'", photo.getOwner() != null ? photo.getOwner().getId() : "unknown", photo.getUrlPhoto());
-
-
+        log.info("User '{}', update photo: '{}'", photo.getOwner() != null ? photo.getOwner().getId() : "unknown", photo.getUrlPhoto());
     }
 
     @PostRemove
