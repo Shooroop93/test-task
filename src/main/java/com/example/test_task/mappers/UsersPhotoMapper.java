@@ -20,8 +20,6 @@ public interface UsersPhotoMapper {
 
     UserPhotoResponse toResponseDTO(UsersPhoto entity);
 
-    List<UserPhotoResponse> toDtoList(List<UsersPhoto> users);
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
