@@ -16,17 +16,17 @@ public class UsersListener {
         LocalDateTime now = LocalDateTime.now();
         users.setCreatedAt(now);
         users.setUpdatedAt(now);
-        log.info("Create user with email: {}", users.getEmail());
+        log.info("Creating new user: firstName='{}', lastName='{}'", users.getFirstName(), users.getLastName());
     }
 
     @PreUpdate
     public void beforeUpdate(Users users) {
         users.setUpdatedAt(LocalDateTime.now());
-        log.info("Updating user with email: {}", users.getEmail());
+        log.info("Updating user: id='{}'", users.getId());
     }
 
     @PostRemove
     public void afterRemove(Users users) {
-        log.info("User removed with email: {}", users.getEmail());
+        log.info("User removed: id='{}", users.getId());
     }
 }

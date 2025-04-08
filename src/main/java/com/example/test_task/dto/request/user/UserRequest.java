@@ -1,10 +1,8 @@
 package com.example.test_task.dto.request.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -35,14 +33,4 @@ public class UserRequest {
 
     @JsonProperty("birth_date")
     private LocalDate birthDate;
-
-    @JsonProperty("email")
-    @NotNull
-    @Email
-    private String email;
-
-    @JsonProperty("phone")
-    @NotNull
-    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Неверный формат номера телефона")
-    private String phone;
 }

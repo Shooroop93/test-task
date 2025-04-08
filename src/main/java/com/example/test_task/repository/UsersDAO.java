@@ -15,20 +15,23 @@ public class UsersDAO {
     private EntityManager entityManager;
 
     public Optional<Users> findById(Long id) {
-        return Optional.ofNullable(entityManager.find(Users.class, id));
-    }
-
-    public Optional<Users> findByEmail(String email) {
-        return entityManager
-                .createQuery("SELECT u FROM Users u WHERE u.email = :email", Users.class)
-                .setParameter("email", email)
+        return entityManager.createQuery("""
+                SELECT u FROM Users u
+                LEFT JOIN FETCH u.contacts
+                LEFT JOIN FETCH u.photo
+                WHERE u.id = :id
+                """, Users.class)
+                .setParameter("id", id)
                 .getResultStream()
                 .findFirst();
     }
 
     public List<Users> findAll() {
-        return entityManager
-                .createQuery("SELECT u FROM Users u", Users.class)
+        return entityManager.createQuery("""
+                SELECT DISTINCT u FROM Users u
+                LEFT JOIN FETCH u.contacts
+                LEFT JOIN FETCH u.photo
+                """, Users.class)
                 .getResultList();
     }
 

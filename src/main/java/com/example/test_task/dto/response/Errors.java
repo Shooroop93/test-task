@@ -18,13 +18,6 @@ public class Errors {
     @JsonProperty("error_message")
     private List<String> errors;
 
-    public void addError(String error) {
-        if (this.errors == null) {
-            this.errors = new ArrayList<>();
-        }
-        this.errors.add(error);
-    }
-
     public Errors(int statusCode, String error) {
         this.statusCode = statusCode;
         if (errors == null) {

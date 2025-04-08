@@ -23,18 +23,10 @@ public class ApplicationResponse {
     private Errors errorList;
 
     @JsonIgnore
-    public Errors getErrorListLazy() {
-        if (errorList == null) {
-            errorList = new Errors();
-        }
-        return errorList;
-    }
-
-    @JsonIgnore
     public void addUserToList(UserResponse userResponse) {
-        if (users == null) {
-            users = new ArrayList<>();
+        if (this.users == null) {
+            this.users = new ArrayList<>();
         }
-        users.add(userResponse);
+        this.users.add(userResponse);
     }
 }

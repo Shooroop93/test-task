@@ -9,11 +9,11 @@ import org.hibernate.validator.constraints.URL;
 @Data
 public class UserPhotoRequest {
 
-    @NotNull(message = "user_id не может быть null")
+    @NotNull
     @JsonProperty("user_id")
     private Long userId;
 
-    @NotBlank(message = "url_photo не может быть пустым")
+    @NotBlank
     @URL
     @JsonProperty("url_photo")
     private String urlPhoto;

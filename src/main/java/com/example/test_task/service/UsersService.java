@@ -40,6 +40,7 @@ public class UsersService {
         return response;
     }
 
+    @Transactional(readOnly = true)
     public ApplicationResponse getAllUsers() {
         log.debug("Getting all users from the database");
         ApplicationResponse response = new ApplicationResponse();
@@ -57,6 +58,7 @@ public class UsersService {
         return response;
     }
 
+    @Transactional(readOnly = true)
     public ApplicationResponse getUserById(Long id) {
         log.debug("Search for a user by ID: {}", id);
         ApplicationResponse response = new ApplicationResponse();
@@ -95,7 +97,7 @@ public class UsersService {
         }
         Users userDAO = user.get();
         usersMapper.updateUserFromDto(request, userDAO);
-        usersDAO.save(userDAO);
+        usersDAO.update(userDAO);
         response.setMessageStatus(MessageStatus.OK);
         response.setUserId(userDAO.getId());
         log.info("User with ID {} has been successfully updated", id);
