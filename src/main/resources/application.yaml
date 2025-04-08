@@ -1,6 +1,8 @@
 spring:
   application:
     name: test-task
+  url:
+    useravatar: https://images.app.goo.gl/HQ1UfYYT6QnUSm9x5
   datasource:
     url: jdbc:postgresql://localhost:5432/test_task
     username: postgres

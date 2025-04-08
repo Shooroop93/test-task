@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @EntityListeners(UsersPhotoListener.class)
+@NoArgsConstructor
 public class UsersPhoto {
 
     @Id
@@ -38,4 +40,9 @@ public class UsersPhoto {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private Users owner;
+
+    public UsersPhoto(String urlPhoto, Users owner) {
+        this.urlPhoto = urlPhoto;
+        this.owner = owner;
+    }
 }

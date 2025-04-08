@@ -5,7 +5,7 @@
 CREATE TABLE users_photo(
     id         bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     user_id    bigint    NOT NULL,
-    url_photo  varchar   NOT NULL DEFAULT 'https://images.app.goo.gl/HQ1UfYYT6QnUSm9x5',
+    url_photo  varchar   NOT NULL,
     created_at timestamp NOT NULL DEFAULT now(),
     updated_at timestamp NOT NULL DEFAULT now(),
 

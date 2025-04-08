@@ -6,9 +6,11 @@ import com.example.test_task.dto.response.ApplicationResponse;
 import com.example.test_task.dto.response.user.UserResponse;
 import com.example.test_task.mappers.UsersMapper;
 import com.example.test_task.repository.UsersDAO;
+import com.example.test_task.repository.UsersPhotoDAO;
 import com.example.test_task.service.UsersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -24,6 +26,9 @@ class UsersServiceTest {
 
     @Mock
     private UsersDAO usersDAO;
+
+    @Mock
+    private UsersPhotoDAO usersPhotoDAO;
 
     @Mock
     private UsersMapper usersMapper;
@@ -42,17 +47,27 @@ class UsersServiceTest {
         request.setFirstName("Test");
         request.setLastName("User");
 
-        Users entity = new Users();
-        entity.setId(1L);
+        Users userEntity = new Users();
+        userEntity.setId(1L);
 
-        when(usersMapper.toEntity(request)).thenReturn(entity);
+        when(usersMapper.toEntity(request)).thenReturn(userEntity);
 
         ApplicationResponse response = usersService.createUser(request);
 
-        verify(usersDAO).save(entity);
+        verify(usersDAO).save(userEntity);
+
+        ArgumentCaptor<UsersPhoto> photoCaptor = ArgumentCaptor.forClass(UsersPhoto.class);
+        verify(usersPhotoDAO).save(photoCaptor.capture());
+
+        UsersPhoto capturedPhoto = photoCaptor.getValue();
+        assertNotNull(capturedPhoto);
+        assertEquals(userEntity, capturedPhoto.getOwner());
+        assertEquals(userEntity.getPhoto(), capturedPhoto);
+
         assertEquals(MessageStatus.CREATED, response.getMessageStatus());
         assertEquals(1L, response.getUserId());
     }
+
 
     @Test
     void getAllUsers_empty() {

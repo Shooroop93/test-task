@@ -50,6 +50,6 @@ public class Users {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<UserContacts> contacts;
 
-    @OneToOne(mappedBy = "owner", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
     private UsersPhoto photo;
 }

@@ -28,4 +28,7 @@ public class UserResponse {
 
     @JsonProperty("contacts")
     private List<UserContactsResponse> contacts;
+
+    @JsonProperty("avatar")
+    private UserPhotoResponse avatar;
 }

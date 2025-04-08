@@ -15,6 +15,7 @@ public interface UsersMapper {
     @Mapping(target = "id", source = "userId")
     Users toEntity(UserRequest dto);
 
+    @Mapping(source = "photo", target = "avatar")
     @Mapping(source = "id", target = "userId")
     UserResponse toResponseDTO(Users entity);
 

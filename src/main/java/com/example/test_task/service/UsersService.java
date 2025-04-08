@@ -7,9 +7,12 @@ import com.example.test_task.dto.response.Errors;
 import com.example.test_task.dto.response.user.UserResponse;
 import com.example.test_task.mappers.UsersMapper;
 import com.example.test_task.model.Users;
+import com.example.test_task.model.UsersPhoto;
 import com.example.test_task.repository.UsersDAO;
+import com.example.test_task.repository.UsersPhotoDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -25,8 +28,12 @@ import static java.lang.String.format;
 @Slf4j
 public class UsersService {
 
+    @Value("${spring.url.useravatar}")
+    private String defaultAvatarUrl;
+
     private final UsersDAO usersDAO;
     private final UsersMapper usersMapper;
+    private final UsersPhotoDAO usersPhotoDAO;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public ApplicationResponse createUser(UserRequest request) {
@@ -34,6 +41,12 @@ public class UsersService {
         ApplicationResponse response = new ApplicationResponse();
         Users userEntity = usersMapper.toEntity(request);
         usersDAO.save(userEntity);
+
+        UsersPhoto usersPhoto = new UsersPhoto(defaultAvatarUrl, userEntity);
+        userEntity.setPhoto(usersPhoto);
+
+        usersPhotoDAO.save(usersPhoto);
+
         response.setUserId(userEntity.getId());
         response.setMessageStatus(MessageStatus.CREATED);
         log.info("The user was successfully created with ID: {}", userEntity.getId());
