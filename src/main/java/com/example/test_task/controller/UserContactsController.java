@@ -43,7 +43,7 @@ public class UserContactsController {
     }
 
     @PutMapping("/{contactId}")
-    public ResponseEntity<ApplicationResponse> update(@PathVariable Long contactId, @Valid @RequestBody UserContactsRequest request, BindingResult bindingResult) throws ExceptionValidatedRequestOrResponse {
+    public ResponseEntity<ApplicationResponse> updateContact(@PathVariable Long contactId, @Valid @RequestBody UserContactsRequest request, BindingResult bindingResult) throws ExceptionValidatedRequestOrResponse {
         if (bindingResult.hasErrors()) {
             throw new ExceptionValidatedRequestOrResponse(bindingResult);
         }
@@ -51,7 +51,7 @@ public class UserContactsController {
     }
 
     @DeleteMapping("/{contactId}")
-    public ResponseEntity<Void> delete(@PathVariable Long contactId) {
+    public ResponseEntity<Void> deleteContact(@PathVariable Long contactId) {
         userContactsService.deleteContact(contactId);
         return ResponseEntity.ok().build();
     }
