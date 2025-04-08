@@ -5,6 +5,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,6 +17,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -38,6 +40,12 @@ public class Users {
     @Column(name = "middle_name", nullable = true, length = 100)
     private String middleName;
 
+    @Column(name = "login", unique = true)
+    private String login;
+
+    @Column(name = "password", unique = true)
+    private String password;
+
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
@@ -52,4 +60,14 @@ public class Users {
 
     @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
     private UsersPhoto photo;
+
+    @OneToMany(mappedBy = "owner", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    private List<Tokens> tokens;
+
+    public void addToken(Tokens token) {
+        if (tokens == null) {
+            tokens = new ArrayList<>();
+        }
+        tokens.add(token);
+    }
 }

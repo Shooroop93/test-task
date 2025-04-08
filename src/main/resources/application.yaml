@@ -16,6 +16,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  security:
+    jwt:
+      secret: /4afOnYUAAMwSmcZIfAvJbMD695iFoRfce8oYRk5kjZMoLyrTltfOqWv46t4nKqElRBcFnRtNyEksF6jO4Ep2A==
+      expiration:
+        access: 3600
+        refresh: 604800
+
 logging:
   level:
     root: INFO
@@ -29,3 +36,7 @@ server:
   servlet:
     encoding:
       charset: UTF-8
+
+security:
+  bcrypt:
+    strength: 10

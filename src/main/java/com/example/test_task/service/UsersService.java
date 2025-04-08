@@ -116,4 +116,9 @@ public class UsersService {
         log.info("User with ID {} has been successfully updated", id);
         return response;
     }
+
+    @Transactional(readOnly = true)
+    public Optional<Users> getUserByLogin(String login) {
+        return usersDAO.findByLogin(login);
+    }
 }
