@@ -99,7 +99,7 @@ public class UsersServiceImpl implements UsersService {
     public void removeUser(Long id) {
         log.debug("Deleting a user with an ID: {}", id);
         Optional<Users> user = usersDAO.findById(id);
-        user.ifPresentOrElse(usersDAO::delete, () -> log.warn("Пользователь для удаления не найден: {}", id));
+        user.ifPresentOrElse(usersDAO::deactivateUser, () -> log.warn("Пользователь для удаления не найден: {}", id));
     }
 
     @Override

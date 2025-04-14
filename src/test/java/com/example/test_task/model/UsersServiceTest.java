@@ -147,7 +147,7 @@ class UsersServiceTest {
 
         usersService.removeUser(1L);
 
-        verify(usersDAO).delete(user);
+        verify(usersDAO).deactivateUser(user);
     }
 
     @Test
@@ -156,6 +156,6 @@ class UsersServiceTest {
 
         usersService.removeUser(1L);
 
-        verify(usersDAO, never()).delete(any());
+        verify(usersDAO, never()).deactivateUser(any());
     }
 }

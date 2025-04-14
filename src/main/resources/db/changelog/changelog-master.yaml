@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/changelog/changeset/create_table/create_table_master/create-table-master.yaml
   - include:
       file: db/changelog/changeset/create_users/create-users-master/create-users-master.yaml
+  - include:
+      file: db/changelog/changeset/added_columns/added-columns-master/added-columns-master.yaml

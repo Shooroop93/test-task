@@ -20,7 +20,11 @@ public class UserContactsDAO {
 
     public List<UserContacts> findByUserId(Long userId) {
         return entityManager
-                .createQuery("SELECT c FROM UserContacts c WHERE c.owner.id = :userId", UserContacts.class)
+                .createQuery("""
+                        SELECT c FROM UserContacts c 
+                        WHERE c.owner.id = :userId 
+                          AND c.owner.isActive = true
+                        """, UserContacts.class)
                 .setParameter("userId", userId)
                 .getResultList();
     }
