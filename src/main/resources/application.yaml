@@ -1,12 +1,14 @@
 spring:
   application:
     name: test-task
+  config:
+    import: "optional:application-secrets.yaml"
   url:
     useravatar: https://images.app.goo.gl/HQ1UfYYT6QnUSm9x5
   datasource:
-    url: jdbc:postgresql://localhost:5432/test_task
-    username: postgres
-    password: qwerty12345
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/changelog-master.yaml
@@ -18,11 +20,10 @@ spring:
         format_sql: true
   security:
     jwt:
-      secret: /4afOnYUAAMwSmcZIfAvJbMD695iFoRfce8oYRk5kjZMoLyrTltfOqWv46t4nKqElRBcFnRtNyEksF6jO4Ep2A==
+      secret: ${JWT_SECRET}
       expiration:
-        access: 3600
-        refresh: 604800
-
+        access: ${JWT_EXPIRATION_ACCESS}
+        refresh: ${JWT_EXPIRATION_REFRESH}
 logging:
   level:
     root: INFO
@@ -36,7 +37,6 @@ server:
   servlet:
     encoding:
       charset: UTF-8
-
 security:
   bcrypt:
-    strength: 10
+    strength: ${BCRYPT_STRENGTH}
