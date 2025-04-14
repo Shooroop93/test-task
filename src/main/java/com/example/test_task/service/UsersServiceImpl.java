@@ -10,10 +10,12 @@ import com.example.test_task.model.Users;
 import com.example.test_task.model.UsersPhoto;
 import com.example.test_task.repository.UsersDAO;
 import com.example.test_task.repository.UsersPhotoDAO;
+import com.example.test_task.service.interfaces.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +28,7 @@ import static java.lang.String.format;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UsersService {
+public class UsersServiceImpl implements UsersService {
 
     @Value("${spring.url.useravatar}")
     private String defaultAvatarUrl;
@@ -35,8 +37,9 @@ public class UsersService {
     private final UsersMapper usersMapper;
     private final UsersPhotoDAO usersPhotoDAO;
 
+    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public ApplicationResponse createUser(UserRequest request) {
+    public ResponseEntity<ApplicationResponse> createUser(UserRequest request) {
         log.debug("Creating a user from a query: {}", request);
         ApplicationResponse response = new ApplicationResponse();
         Users userEntity = usersMapper.toEntity(request);
@@ -50,11 +53,12 @@ public class UsersService {
         response.setUserId(userEntity.getId());
         response.setMessageStatus(MessageStatus.CREATED);
         log.info("The user was successfully created with ID: {}", userEntity.getId());
-        return response;
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public ApplicationResponse getAllUsers() {
+    public ResponseEntity<ApplicationResponse> getAllUsers() {
         log.debug("Getting all users from the database");
         ApplicationResponse response = new ApplicationResponse();
         List<Users> users = usersDAO.findAll();
@@ -63,16 +67,18 @@ public class UsersService {
             log.debug("The user list is empty");
             response.setMessageStatus(MessageStatus.ERROR);
             response.setErrorList(new Errors(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT.getReasonPhrase()));
-            return response;
+            return ResponseEntity.status(response.getErrorList().getStatusCode()).body(response);
         }
 
         response.setUsers(usersMapper.toDtoList(users));
         response.setMessageStatus(MessageStatus.OK);
-        return response;
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public ApplicationResponse getUserById(Long id) {
+    public ResponseEntity<ApplicationResponse> getUserById(Long id) {
         log.debug("Search for a user by ID: {}", id);
         ApplicationResponse response = new ApplicationResponse();
         Optional<Users> user = usersDAO.findById(id);
@@ -80,14 +86,15 @@ public class UsersService {
             log.warn("User with ID {} not found", id);
             response.setMessageStatus(MessageStatus.ERROR);
             response.setErrorList(new Errors(HttpStatus.NOT_FOUND.value(), format("Пользователь с id '%d' не найден", id)));
-            return response;
+            return ResponseEntity.status(response.getErrorList().getStatusCode()).body(response);
         }
         UserResponse userDTO = usersMapper.toResponseDTO(user.get());
         response.addUserToList(userDTO);
         response.setMessageStatus(MessageStatus.OK);
-        return response;
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void removeUser(Long id) {
         log.debug("Deleting a user with an ID: {}", id);
@@ -95,8 +102,9 @@ public class UsersService {
         user.ifPresentOrElse(usersDAO::delete, () -> log.warn("Пользователь для удаления не найден: {}", id));
     }
 
+    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public ApplicationResponse updateUser(Long id, UserRequest request) {
+    public ResponseEntity<ApplicationResponse> updateUser(Long id, UserRequest request) {
         log.debug("Updating a user with ID {} data: {}", id, request);
         ApplicationResponse response = new ApplicationResponse();
 
@@ -106,7 +114,7 @@ public class UsersService {
             log.warn("User with ID {} not found for update", id);
             response.setMessageStatus(MessageStatus.ERROR);
             response.setErrorList(new Errors(HttpStatus.NOT_FOUND.value(), format("Пользователь с id '%d' не найден", id)));
-            return response;
+            return ResponseEntity.status(response.getErrorList().getStatusCode()).body(response);
         }
         Users userDAO = user.get();
         usersMapper.updateUserFromDto(request, userDAO);
@@ -114,9 +122,10 @@ public class UsersService {
         response.setMessageStatus(MessageStatus.OK);
         response.setUserId(userDAO.getId());
         log.info("User with ID {} has been successfully updated", id);
-        return response;
+        return ResponseEntity.ok(response);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Optional<Users> getUserByLogin(String login) {
         return usersDAO.findByLogin(login);

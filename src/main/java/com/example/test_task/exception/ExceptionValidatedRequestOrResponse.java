@@ -1,11 +1,15 @@
 package com.example.test_task.exception;
 
-import org.springframework.validation.BindException;
+import lombok.Getter;
 import org.springframework.validation.BindingResult;
 
-public class ExceptionValidatedRequestOrResponse extends BindException implements BindingResult {
+@Getter
+public class ExceptionValidatedRequestOrResponse extends RuntimeException {
 
-    public ExceptionValidatedRequestOrResponse(BindingResult  message) {
-        super(message);
+    private final BindingResult bindingResult;
+
+    public ExceptionValidatedRequestOrResponse(BindingResult bindingResult) {
+        super("Validation failed");
+        this.bindingResult = bindingResult;
     }
 }

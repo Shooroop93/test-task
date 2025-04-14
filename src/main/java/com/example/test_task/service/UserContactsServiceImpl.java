@@ -11,9 +11,11 @@ import com.example.test_task.model.UserContacts;
 import com.example.test_task.model.Users;
 import com.example.test_task.repository.UserContactsDAO;
 import com.example.test_task.repository.UsersDAO;
+import com.example.test_task.service.interfaces.UserContactsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +28,15 @@ import static java.lang.String.format;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserContactsService {
+public class UserContactsServiceImpl implements UserContactsService {
 
     private final UserContactsDAO userContactsDAO;
     private final UsersDAO usersDAO;
     private final UserContactsMapper mapper;
 
+    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public ApplicationResponse createContact(Long userId, UserContactsRequest request) {
+    public ResponseEntity<ApplicationResponse> createContact(Long userId, UserContactsRequest request) {
         log.debug("Creating a contact from a query: {}", request);
         ApplicationResponse response = new ApplicationResponse();
 
@@ -42,7 +45,7 @@ public class UserContactsService {
             log.warn("User with ID {} not found", userId);
             response.setMessageStatus(MessageStatus.ERROR);
             response.setErrorList(new Errors(HttpStatus.NOT_FOUND.value(), format("Пользователь с id '%d' не найден", userId)));
-            return response;
+            return ResponseEntity.status(response.getErrorList().getStatusCode()).body(response);
         }
 
         Users userModel = user.get();
@@ -53,11 +56,12 @@ public class UserContactsService {
         log.info("Contact successfully created for userId={}, contactId={}", userId, contact.getId());
         response.setMessageStatus(MessageStatus.CREATED);
         response.setUserId(userId);
-        return response;
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public ApplicationResponse getContactsByUserId(Long userId) {
+    public ResponseEntity<ApplicationResponse> getContactsByUserId(Long userId) {
         log.debug("Fetching contacts for userId={}", userId);
         ApplicationResponse response = new ApplicationResponse();
 
@@ -66,7 +70,7 @@ public class UserContactsService {
             log.warn("User with ID {} not found", userId);
             response.setMessageStatus(MessageStatus.ERROR);
             response.setErrorList(new Errors(HttpStatus.NOT_FOUND.value(), format("Пользователь с id '%d' не найден", userId)));
-            return response;
+            return ResponseEntity.status(response.getErrorList().getStatusCode()).body(response);
         }
 
         List<UserContacts> contacts = userContactsDAO.findByUserId(userId);
@@ -78,11 +82,12 @@ public class UserContactsService {
         userResponse.setContacts(contactsDto);
 
         response.addUserToList(userResponse);
-        return response;
+        return ResponseEntity.ok(response);
     }
 
+    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public ApplicationResponse updateContact(Long contactId, UserContactsRequest request) {
+    public ResponseEntity<ApplicationResponse> updateContact(Long contactId, UserContactsRequest request) {
         log.debug("Updating contactId={} with data: {}", contactId, request);
         ApplicationResponse response = new ApplicationResponse();
 
@@ -91,7 +96,7 @@ public class UserContactsService {
             log.warn("Contact with ID {} not found", contactId);
             response.setMessageStatus(MessageStatus.ERROR);
             response.setErrorList(new Errors(HttpStatus.NOT_FOUND.value(), format("Контакт с id '%d' не найден", contactId)));
-            return response;
+            return ResponseEntity.status(response.getErrorList().getStatusCode()).body(response);
         }
 
         UserContacts userContacts = contact.get();
@@ -100,9 +105,10 @@ public class UserContactsService {
 
         log.info("Contact with ID {} successfully updated", contactId);
         response.setMessageStatus(MessageStatus.OK);
-        return response;
+        return ResponseEntity.ok(response);
     }
 
+    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void deleteContact(Long contactId) {
         log.debug("The contact of user ID {} has been deleted:", contactId);

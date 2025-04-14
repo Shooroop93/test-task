@@ -7,7 +7,8 @@ import com.example.test_task.dto.response.user.UserPhotoResponse;
 import com.example.test_task.mappers.UsersPhotoMapper;
 import com.example.test_task.repository.UsersDAO;
 import com.example.test_task.repository.UsersPhotoDAO;
-import com.example.test_task.service.UserPhotoService;
+import com.example.test_task.service.UserPhotoServiceImpl;
+import com.example.test_task.service.interfaces.UserPhotoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,6 +24,10 @@ import static org.mockito.Mockito.when;
 
 public class UserPhotoServiceTest {
 
+    @InjectMocks
+    private UserPhotoServiceImpl userPhotoServiceImpl;
+    private UserPhotoService userPhotoService;
+
     @Mock
     private UsersPhotoDAO usersPhotoDAO;
 
@@ -32,12 +37,10 @@ public class UserPhotoServiceTest {
     @Mock
     private UsersPhotoMapper usersPhotoMapper;
 
-    @InjectMocks
-    private UserPhotoService userPhotoService;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        userPhotoService = userPhotoServiceImpl;
     }
 
     @Test
@@ -52,7 +55,7 @@ public class UserPhotoServiceTest {
         when(usersDAO.findById(1L)).thenReturn(Optional.of(user));
         when(usersPhotoMapper.toResponseDTO(photo)).thenReturn(new UserPhotoResponse(10L, "http://example.com/photo.jpg"));
 
-        ApplicationResponse response = userPhotoService.getPhotoByUserId(1L);
+        ApplicationResponse response = userPhotoService.getPhotoByUserId(1L).getBody();
 
         assertEquals(MessageStatus.OK, response.getMessageStatus());
         assertEquals(1L, response.getUsers().get(0).getUserId());
@@ -63,7 +66,7 @@ public class UserPhotoServiceTest {
     void getPhotoByUserId_userNotFound() {
         when(usersDAO.findById(1L)).thenReturn(Optional.empty());
 
-        ApplicationResponse response = userPhotoService.getPhotoByUserId(1L);
+        ApplicationResponse response = userPhotoService.getPhotoByUserId(1L).getBody();
 
         assertEquals(MessageStatus.ERROR, response.getMessageStatus());
     }
@@ -78,7 +81,7 @@ public class UserPhotoServiceTest {
 
         when(usersPhotoDAO.findById(10L)).thenReturn(Optional.of(photo));
 
-        ApplicationResponse response = userPhotoService.updatePhotoByPhotoId(10L, request);
+        ApplicationResponse response = userPhotoService.updatePhotoByPhotoId(10L, request).getBody();
 
         verify(usersPhotoMapper).updateUserFromDto(request, photo);
         assertEquals(MessageStatus.OK, response.getMessageStatus());
@@ -91,7 +94,7 @@ public class UserPhotoServiceTest {
         UserPhotoRequest request = new UserPhotoRequest();
         request.setUrlPhoto("http://new-photo.com/avatar.png");
 
-        ApplicationResponse response = userPhotoService.updatePhotoByPhotoId(10L, request);
+        ApplicationResponse response = userPhotoService.updatePhotoByPhotoId(10L, request).getBody();
 
         assertEquals(MessageStatus.ERROR, response.getMessageStatus());
     }

@@ -7,7 +7,8 @@ import com.example.test_task.dto.response.user.UserContactsResponse;
 import com.example.test_task.mappers.UserContactsMapper;
 import com.example.test_task.repository.UserContactsDAO;
 import com.example.test_task.repository.UsersDAO;
-import com.example.test_task.service.UserContactsService;
+import com.example.test_task.service.UserContactsServiceImpl;
+import com.example.test_task.service.interfaces.UserContactsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,8 @@ import static org.mockito.Mockito.*;
 class UserContactsServiceTest {
 
     @InjectMocks
+    private UserContactsServiceImpl serviceImpl;
+
     private UserContactsService service;
 
     @Mock
@@ -50,13 +53,15 @@ class UserContactsServiceTest {
         request = new UserContactsRequest();
         request.setEmail("test@test.com");
         request.setPhone("+123456789");
+
+        service = serviceImpl;
     }
 
     @Test
     void createContact_userExists_success() {
         when(usersDAO.findById(1L)).thenReturn(Optional.of(user));
         when(mapper.toEntity(request)).thenReturn(contact);
-        ApplicationResponse response = service.createContact(1L, request);
+        ApplicationResponse response = service.createContact(1L, request).getBody();
         verify(userContactsDAO).save(contact);
         assertThat(response.getMessageStatus()).isEqualTo(MessageStatus.CREATED);
         assertThat(response.getUserId()).isEqualTo(1L);
@@ -65,7 +70,7 @@ class UserContactsServiceTest {
     @Test
     void createContact_userNotFound_error() {
         when(usersDAO.findById(1L)).thenReturn(Optional.empty());
-        ApplicationResponse response = service.createContact(1L, request);
+        ApplicationResponse response = service.createContact(1L, request).getBody();
         assertThat(response.getMessageStatus()).isEqualTo(MessageStatus.ERROR);
         assertThat(response.getErrorList().getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
@@ -75,7 +80,7 @@ class UserContactsServiceTest {
         when(usersDAO.findById(1L)).thenReturn(Optional.of(user));
         when(userContactsDAO.findByUserId(1L)).thenReturn(List.of(contact));
         when(mapper.toResponseList(List.of(contact))).thenReturn(List.of(new UserContactsResponse()));
-        ApplicationResponse response = service.getContactsByUserId(1L);
+        ApplicationResponse response = service.getContactsByUserId(1L).getBody();
         assertThat(response.getMessageStatus()).isEqualTo(MessageStatus.OK);
         assertThat(response.getUsers()).hasSize(1);
     }
@@ -83,7 +88,7 @@ class UserContactsServiceTest {
     @Test
     void getContactsByUserId_userNotFound_error() {
         when(usersDAO.findById(1L)).thenReturn(Optional.empty());
-        ApplicationResponse response = service.getContactsByUserId(1L);
+        ApplicationResponse response = service.getContactsByUserId(1L).getBody();
         assertThat(response.getMessageStatus()).isEqualTo(MessageStatus.ERROR);
         assertThat(response.getErrorList().getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
@@ -91,7 +96,7 @@ class UserContactsServiceTest {
     @Test
     void updateContact_contactExists_success() {
         when(userContactsDAO.findById(2L)).thenReturn(Optional.of(contact));
-        ApplicationResponse response = service.updateContact(2L, request);
+        ApplicationResponse response = service.updateContact(2L, request).getBody();
         verify(mapper).updateFromDto(request, contact);
         verify(userContactsDAO).update(contact);
         assertThat(response.getMessageStatus()).isEqualTo(MessageStatus.OK);
@@ -100,7 +105,7 @@ class UserContactsServiceTest {
     @Test
     void updateContact_contactNotFound_error() {
         when(userContactsDAO.findById(2L)).thenReturn(Optional.empty());
-        ApplicationResponse response = service.updateContact(2L, request);
+        ApplicationResponse response = service.updateContact(2L, request).getBody();
         assertThat(response.getMessageStatus()).isEqualTo(MessageStatus.ERROR);
         assertThat(response.getErrorList().getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }

@@ -5,6 +5,9 @@ import com.example.test_task.dto.TokenObject;
 import com.example.test_task.dto.request.auth.AuthRequest;
 import com.example.test_task.dto.response.auth.AuthResponse;
 import com.example.test_task.model.Users;
+import com.example.test_task.service.interfaces.LoginService;
+import com.example.test_task.service.interfaces.TokenService;
+import com.example.test_task.service.interfaces.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,12 +21,13 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class LoginService {
+public class LoginServiceImpl implements LoginService {
 
     private final BCryptPasswordEncoder encoder;
     private final UsersService usersService;
     private final TokenService tokenService;
 
+    @Override
     public ResponseEntity<?> auth(AuthRequest request, UUID sessionId) {
 
         Optional<Users> usersOptional = usersService.getUserByLogin(request.getLogin());

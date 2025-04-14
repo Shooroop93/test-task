@@ -5,6 +5,7 @@ import com.example.test_task.dto.TokenObject;
 import com.example.test_task.model.Tokens;
 import com.example.test_task.model.Users;
 import com.example.test_task.repository.TokensRepository;
+import com.example.test_task.service.interfaces.TokenService;
 import com.example.test_task.utils.JwtUtils;
 import com.example.test_task.utils.TimeUtils;
 import io.jsonwebtoken.Jwts;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TokenService {
+public class TokenServiceImpl implements TokenService {
 
     private final JwtUtils jwtUtils;
     private final TokensRepository tokensRepository;
@@ -36,6 +37,7 @@ public class TokenService {
     @Value("${spring.security.jwt.expiration.refresh}")
     private long expirationRefresh;
 
+    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public TokenObject generateToken(Users user, JWTokenType tokenType, UUID sessionId) {
         log.info("Start generating JWT token for user: {}", user.getLogin());

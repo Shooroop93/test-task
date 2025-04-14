@@ -7,7 +7,8 @@ import com.example.test_task.dto.response.user.UserResponse;
 import com.example.test_task.mappers.UsersMapper;
 import com.example.test_task.repository.UsersDAO;
 import com.example.test_task.repository.UsersPhotoDAO;
-import com.example.test_task.service.UsersService;
+import com.example.test_task.service.UsersServiceImpl;
+import com.example.test_task.service.interfaces.UsersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -24,6 +25,10 @@ import static org.mockito.Mockito.*;
 
 class UsersServiceTest {
 
+    @InjectMocks
+    private UsersServiceImpl usersServiceImpl;
+    private UsersService usersService;
+
     @Mock
     private UsersDAO usersDAO;
 
@@ -33,12 +38,10 @@ class UsersServiceTest {
     @Mock
     private UsersMapper usersMapper;
 
-    @InjectMocks
-    private UsersService usersService;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        usersService = usersServiceImpl;
     }
 
     @Test
@@ -52,7 +55,7 @@ class UsersServiceTest {
 
         when(usersMapper.toEntity(request)).thenReturn(userEntity);
 
-        ApplicationResponse response = usersService.createUser(request);
+        ApplicationResponse response = usersService.createUser(request).getBody();
 
         verify(usersDAO).save(userEntity);
 
@@ -73,7 +76,7 @@ class UsersServiceTest {
     void getAllUsers_empty() {
         when(usersDAO.findAll()).thenReturn(Collections.emptyList());
 
-        ApplicationResponse response = usersService.getAllUsers();
+        ApplicationResponse response = usersService.getAllUsers().getBody();
 
         assertEquals(MessageStatus.ERROR, response.getMessageStatus());
         assertEquals(HttpStatus.NO_CONTENT.value(), response.getErrorList().getStatusCode());
@@ -85,7 +88,7 @@ class UsersServiceTest {
         when(usersDAO.findAll()).thenReturn(Collections.singletonList(user));
         when(usersMapper.toDtoList(any())).thenReturn(Collections.singletonList(new UserResponse()));
 
-        ApplicationResponse response = usersService.getAllUsers();
+        ApplicationResponse response = usersService.getAllUsers().getBody();
 
         assertEquals(MessageStatus.OK, response.getMessageStatus());
         assertNotNull(response.getUsers());
@@ -95,7 +98,7 @@ class UsersServiceTest {
     void getUserById_notFound() {
         when(usersDAO.findById(1L)).thenReturn(Optional.empty());
 
-        ApplicationResponse response = usersService.getUserById(1L);
+        ApplicationResponse response = usersService.getUserById(1L).getBody();
 
         assertEquals(MessageStatus.ERROR, response.getMessageStatus());
         assertEquals(HttpStatus.NOT_FOUND.value(), response.getErrorList().getStatusCode());
@@ -108,7 +111,7 @@ class UsersServiceTest {
         when(usersDAO.findById(1L)).thenReturn(Optional.of(user));
         when(usersMapper.toResponseDTO(user)).thenReturn(new UserResponse());
 
-        ApplicationResponse response = usersService.getUserById(1L);
+        ApplicationResponse response = usersService.getUserById(1L).getBody();
 
         assertEquals(MessageStatus.OK, response.getMessageStatus());
         assertFalse(response.getUsers().isEmpty());
@@ -118,7 +121,7 @@ class UsersServiceTest {
     void updateUser_notFound() {
         when(usersDAO.findById(1L)).thenReturn(Optional.empty());
 
-        ApplicationResponse response = usersService.updateUser(1L, new UserRequest());
+        ApplicationResponse response = usersService.updateUser(1L, new UserRequest()).getBody();
 
         assertEquals(MessageStatus.ERROR, response.getMessageStatus());
     }
@@ -130,7 +133,7 @@ class UsersServiceTest {
         UserRequest request = new UserRequest();
         when(usersDAO.findById(1L)).thenReturn(Optional.of(user));
 
-        ApplicationResponse response = usersService.updateUser(1L, request);
+        ApplicationResponse response = usersService.updateUser(1L, request).getBody();
 
         verify(usersMapper).updateUserFromDto(request, user);
         verify(usersDAO).update(user);

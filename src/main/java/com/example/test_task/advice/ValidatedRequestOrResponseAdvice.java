@@ -1,29 +1,28 @@
 package com.example.test_task.advice;
 
-import com.example.test_task.annotation.CustomControllerHandler;
 import com.example.test_task.dto.response.ApplicationResponse;
 import com.example.test_task.dto.response.Errors;
-import com.example.test_task.exception.ExceptionValidatedRequestOrResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.List;
-import java.util.Locale;
 
-@ControllerAdvice(annotations = {CustomControllerHandler.class})
+@ControllerAdvice
 public class ValidatedRequestOrResponseAdvice {
 
-    @ExceptionHandler(ExceptionValidatedRequestOrResponse.class)
-    public ResponseEntity<ApplicationResponse> handleValidateException(BindException exception, Locale locale) {
-
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApplicationResponse> handleValidateException(BindException exception) {
+        BindingResult result = exception.getBindingResult();
         ApplicationResponse response = new ApplicationResponse();
 
-        List<String> errorMessages = exception.getFieldErrors().stream()
+        List<String> errorMessages = result.getFieldErrors().stream()
                 .map(fieldError -> String.format("%s: %s", fieldError.getField(), fieldError.getDefaultMessage()))
                 .toList();
 
