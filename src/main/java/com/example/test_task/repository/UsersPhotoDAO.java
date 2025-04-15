@@ -17,14 +17,6 @@ public class UsersPhotoDAO {
         return Optional.ofNullable(entityManager.find(UsersPhoto.class, id));
     }
 
-    public Optional<UsersPhoto> findByUserId(Long userId) {
-        return entityManager
-                .createQuery("SELECT p FROM UsersPhoto p WHERE p.owner.id = :userId", UsersPhoto.class)
-                .setParameter("userId", userId)
-                .getResultStream()
-                .findFirst();
-    }
-
     public void save(UsersPhoto photo) {
         entityManager.persist(photo);
     }

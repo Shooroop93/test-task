@@ -40,3 +40,6 @@ server:
 security:
   bcrypt:
     strength: ${BCRYPT_STRENGTH}
+app:
+  file:
+    upload-dir: ${UPLOAD_DIR:uploads}

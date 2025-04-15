@@ -1,14 +1,15 @@
 package com.example.test_task.service.interfaces;
 
-import com.example.test_task.dto.request.user.UserPhotoRequest;
 import com.example.test_task.dto.response.ApplicationResponse;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserPhotoService {
 
-    ResponseEntity<ApplicationResponse> getPhotoByUserId(Long userId);
+    ResponseEntity<ApplicationResponse> uploadPhoto(Long userId, MultipartFile file);
 
-    ResponseEntity<ApplicationResponse> updatePhotoByPhotoId(Long photoId, UserPhotoRequest request);
+    ResponseEntity<Resource> downloadPhoto(Long userId);
 
-    void deletePhotoByPhotoId(Long photoId);
+    ResponseEntity<ApplicationResponse> deletePhoto(Long photoId);
 }

@@ -1,17 +1,15 @@
 package com.example.test_task.controller;
 
 import com.example.test_task.controller.interfaces.UserPhotoController;
-import com.example.test_task.dto.request.user.UserPhotoRequest;
 import com.example.test_task.dto.response.ApplicationResponse;
 import com.example.test_task.service.interfaces.UserPhotoService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/v1/user/photo")
@@ -22,18 +20,17 @@ public class UserPhotoControllerImpl implements UserPhotoController {
     private final UserPhotoService userPhotoService;
 
     @Override
-    public ResponseEntity<ApplicationResponse> getPhotoByUserId(@PathVariable Long userId) {
-        return userPhotoService.getPhotoByUserId(userId);
+    public ResponseEntity<ApplicationResponse> uploadPhoto(Long userId, MultipartFile file) {
+        return userPhotoService.uploadPhoto(userId, file);
     }
 
     @Override
-    public ResponseEntity<ApplicationResponse> updatePhoto(@PathVariable Long photoId, @Valid @RequestBody UserPhotoRequest request) {
-        return userPhotoService.updatePhotoByPhotoId(photoId, request);
+    public ResponseEntity<Resource> downloadPhoto(Long userId) {
+        return userPhotoService.downloadPhoto(userId);
     }
 
     @Override
-    public ResponseEntity<Void> deletePhoto(@PathVariable Long photoId) {
-        userPhotoService.deletePhotoByPhotoId(photoId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ApplicationResponse> deletePhoto(Long photoId) {
+        return userPhotoService.deletePhoto(photoId);
     }
 }
